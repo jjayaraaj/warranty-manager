@@ -36,8 +36,7 @@ import { WarrantyFormValues } from "@/types/ui/warranty-form";
 import { toast } from "@/hooks/use-toast";
 import WarrantyNotifications from "./_components/WarrantyNotifications";
 
-
-export const mockWarranties: Warranty[] = [
+ const mockWarranties: Warranty[] = [
   {
     id: 1,
     productName: "MacBook Pro",
