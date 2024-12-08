@@ -1,5 +1,11 @@
 import WarrantyDetails from "../../_components/WarrantyDetails";
+import { use } from 'react';
 
-export default function WarrantyDetailsPage({ params }: { params: { id: string } }) {
-    return <WarrantyDetails warrantyId={params.id} />;
-  }
+
+type Params = Promise<{ id: string}>
+
+export default async function WarrantyDetailsPage(
+  props: { params: Params }) {
+    const params = use(props.params);
+  return <WarrantyDetails warrantyId={params.id} />;
+}
