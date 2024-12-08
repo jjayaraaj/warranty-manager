@@ -1,11 +1,11 @@
 'use client'
 import React from 'react';
-import { Clock, Calendar, Receipt, Building, Phone, AlertCircle, ArrowLeft, Bell, Edit } from 'lucide-react';
+import { Clock, Calendar, Building, Phone, AlertCircle, ArrowLeft, Edit } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
@@ -51,10 +51,12 @@ const warrantyData = {
     ]
   };
 
-const WarrantyDetails = ({ warrantyId }: { warrantyId: string }) => {
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
+  const WarrantyDetails = ({ warrantyId }: { warrantyId: string }) => {
   // Mock data - in real app, fetch based on warrantyId
  const [warranty, setWarranty] = React.useState(warrantyData);
- const [isOpen, setIsOpen] = React.useState(false);
+ const [_isOpen, setIsOpen] = React.useState(false);
  const { toast } = useToast();
 
   const getExpirationDate = () => {

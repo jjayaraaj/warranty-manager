@@ -205,6 +205,7 @@ export default function Page() {
   // Calculate counts for status cards
   const totalWarranties = warranties.length;
   const activeWarranties = warranties.filter(w => w.status === 'active').length;
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   const expiringWarranties = warranties.filter(w => w.status === 'expiring').length;
   const expiredWarranties = warranties.filter(w => w.status === 'expired').length;
 

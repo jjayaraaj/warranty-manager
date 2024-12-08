@@ -124,6 +124,8 @@ const EditWarrantyForm = ({ warranty, onSubmit, onCancel, onSuccess }: EditWarra
       setOptimisticData(data);
   
       await onSubmit(data);
+
+      onSuccess?.();
   
       toast({
         title: "Success",
