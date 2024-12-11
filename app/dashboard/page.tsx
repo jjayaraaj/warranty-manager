@@ -1,6 +1,6 @@
 'use client'
 
-import { Bell, CheckCircle, Clock, LayoutGrid, List, PlusCircle, Search, XCircle } from "lucide-react";
+import { Bell, CheckCircle, Clock, CreditCard, LayoutGrid, List, PlusCircle, Search, XCircle } from "lucide-react";
 import React, { useState } from "react";
 import {
   Warranty,
@@ -11,7 +11,8 @@ import {
   WarrantyListItemProps,
   ViewToggleProps,
   TabProps,
-  getWarrantyStatus
+  getWarrantyStatus,
+  MainTabType
 } from '@/types/ui/warranty';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,6 +36,15 @@ import AddWarrantyDialog from "./_components/AddWarranty";
 import { WarrantyFormValues } from "@/types/ui/warranty-form";
 import { toast } from "@/hooks/use-toast";
 import WarrantyNotifications from "./_components/WarrantyNotifications";
+import SubscriptionCard from "./_components/SubscriptionCard";
+import { subscriptionFormSchema, SubscriptionFormValues } from "@/types/ui/subscriptionFormSchema";
+import AddSubscriptionDialog from "./_components/AddSubscriptionDialog";
+import { z } from "zod";
+import { Subscription } from "@/types/ui/subscription";
+
+
+
+
 
  const mockWarranties: Warranty[] = [
   {
@@ -194,10 +204,58 @@ const WarrantyListItem: React.FC<WarrantyListItemProps> = ({ warranty, onViewDet
   </div>
 );
 
+const defaultSubscriptionValues = {
+  usageTracking: {
+    enabled: false,
+    currentUsage: 0,
+    usageHistory: [],
+    monthlyLimit: undefined,
+    usageUnit: undefined
+  },
+  notifications: {
+    paymentReminders: true,
+    usageAlerts: true,
+    priceChanges: true,
+    reminderDays: [7, 3, 1]
+  },
+  notes: "",
+  customBillingDays: undefined
+};
+
 export default function Page() {
   const [activeTab, setActiveTab] = useState<TabType>('all');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [warranties, setWarranties] = useState(mockWarranties);
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([
+    {
+      id: 1,
+      serviceName: "Netflix",
+      provider: "Netflix, Inc.",
+      planName: "Premium",
+      subscriptionCost: 19.99,
+      billingCycle: "monthly",
+      startDate: "2024-01-01",
+      autoRenewal: true,
+      category: "streaming",
+      paymentMethod: "Credit Card",
+      notes: "",
+      usageTracking: {
+        enabled: true,
+        monthlyLimit: 100,
+        currentUsage: 85,
+        usageUnit: "hours",
+        usageHistory: []
+      },
+      notifications: {
+        paymentReminders: true,
+        usageAlerts: true,
+        priceChanges: true,
+        reminderDays: [7, 3, 1]
+      }
+    }
+  ]);
+  const [mainActiveTab, setMainActiveTab] = useState<MainTabType>('warranties');
+ 
 
 
 
@@ -247,20 +305,70 @@ export default function Page() {
     });
   };
 
+   // Add subscription metrics
+   const totalSubscriptions = subscriptions.length;
+   const monthlySubscriptionCost = subscriptions.reduce(
+     (total, sub) => total + sub.subscriptionCost,
+     0
+   );
+
+
+   // Add this within the Page component:
+   const handleAddSubscription = (formData: Partial<SubscriptionFormValues>) => {
+      // Ensure all required fields are present from the form data
+      console.log("ASDasdgh")
+  if (!formData.serviceName || !formData.provider || !formData.billingCycle || 
+    !formData.startDate || !formData.category || !formData.paymentMethod) {
+  toast({
+    title: "Error",
+    description: "Missing required fields",
+    variant: "destructive"
+  });
+  return;
+}
+
+const newSubscription: Subscription = {
+  id: subscriptions.length + 1,
+  serviceName: formData.serviceName,
+  provider: formData.provider,
+  planName: formData.planName ?? '',
+  subscriptionCost: formData.subscriptionCost ?? 0,
+  billingCycle: formData.billingCycle,
+  startDate: formData.startDate,
+  autoRenewal: formData.autoRenewal ?? false,
+  category: formData.category,
+  paymentMethod: formData.paymentMethod,
+  // Merge optional fields with defaults
+  notes: formData.notes || defaultSubscriptionValues.notes,
+  customBillingDays: formData.customBillingDays,
+  usageTracking: {
+    ...defaultSubscriptionValues.usageTracking,
+    ...formData.usageTracking
+  },
+  notifications: {
+    ...defaultSubscriptionValues.notifications,
+    ...formData.notifications
+  }
+};
+
+setSubscriptions(prev => [...prev, newSubscription]);
+  
+    
+  
+    toast({
+      title: "Subscription Added",
+      description: `${formData.serviceName} subscription has been successfully added.`,
+    });
+  };
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <header className="border-b">
+      {/* <header className="border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <h1 className="text-xl font-bold">Warranty Manager</h1>
             <div className="flex items-center space-x-4">
-              {/* <Button variant="ghost" size="icon" className="relative">
-                <Bell className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full w-4 h-4 text-xs flex items-center justify-center">
-                  2
-                </span>
-              </Button> */}
+              
               <div className="flex items-center space-x-4">
   <WarrantyNotifications />
   <div className="h-8 w-8 rounded-full bg-gray-200"></div>
@@ -272,7 +380,7 @@ export default function Page() {
             </div>
           </div>
         </div>
-      </header>
+      </header> */}
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Action Bar */}
@@ -300,10 +408,8 @@ export default function Page() {
           <div className="flex items-center space-x-4">
             <ViewToggle currentView={viewMode} onViewChange={setViewMode} />
             <AddWarrantyDialog onSubmit={handleAddWarranty} />
-            <Button>
-              <PlusCircle className="h-5 w-5 mr-2" />
-              Add Warranty
-            </Button>
+            <AddSubscriptionDialog onSubmit={handleAddSubscription} />
+          
           </div>
         </div>
 
@@ -330,9 +436,36 @@ export default function Page() {
             bgColor="bg-red-100"
             iconColor="text-red-500"
           />
+          <StatusCard
+            title="Total Subscriptions"
+            count={totalSubscriptions}
+            icon={<CreditCard className="h-6 w-6" />}
+            bgColor="bg-purple-100"
+            iconColor="text-purple-500"
+          />
+          <StatusCard
+            title="Monthly Cost"
+            // count={`$${monthlySubscriptionCost.toFixed(2)}`}
+            count={monthlySubscriptionCost}
+            icon={<Clock className="h-6 w-6" />}
+            bgColor="bg-orange-100"
+            iconColor="text-orange-500"
+          />
         </div>
 
-        {/* Tabs */}
+        <Tabs defaultValue="warranties" className="mb-6" onValueChange={(value) => setMainActiveTab(value as MainTabType)}>
+          <TabsList>
+            <TabsTrigger value="warranties">Warranties</TabsTrigger>
+            <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
+          </TabsList>
+        </Tabs>
+
+      
+
+         {/* Warranty Content */}
+         {mainActiveTab === 'warranties' && 
+         <>
+           {/* Tabs */}
         <Tabs defaultValue={activeTab} className="mb-6" onValueChange={(value) => setActiveTab(value as TabType)}>
           <TabsList>
             <TabsTrigger value="all">All</TabsTrigger>
@@ -342,8 +475,8 @@ export default function Page() {
           </TabsList>
         </Tabs>
 
-        {/* Warranty Display */}
-        {viewMode === 'grid' ? (
+         {/* Warranty Display */}
+         {viewMode === 'grid' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {warranties.map(warranty => (
               <WarrantyCard
@@ -364,6 +497,23 @@ export default function Page() {
             ))}
           </Card>
         )}
+         </>
+}
+         {/* Subscription Content */}
+        {mainActiveTab === 'subscriptions' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {subscriptions.map((subscription, index) => (
+              <SubscriptionCard
+                key={index}
+                subscription={subscription}
+              />
+            ))}
+          </div>
+        )}
+         
+         
+
+       
       </main>
     </div>
   );

@@ -38,6 +38,8 @@ import {
 } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { warrantyFormSchema, type WarrantyFormValues } from "@/types/ui/warranty-form";
+import WarrantyDocumentUpload from './WarrantyDocumentUpload';
+import { ExtractedWarrantyData } from '@/types/ui/warranty';
 
 interface AddWarrantyDialogProps {
   onSubmit: (data: WarrantyFormValues) => void;
@@ -76,6 +78,16 @@ export default function AddWarrantyDialog({ onSubmit }: AddWarrantyDialogProps) 
     form.reset();
   };
 
+  const handleDocumentProcessed = (data: ExtractedWarrantyData) => {
+    console.log('Extracted data:', data);
+    // Update form fields with extracted data
+  };
+
+  const handleError = (error: Error) => {
+    console.error('Document processing error:', error);
+    // Handle error (e.g., show toast notification)
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -94,6 +106,10 @@ export default function AddWarrantyDialog({ onSubmit }: AddWarrantyDialogProps) 
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+          <WarrantyDocumentUpload 
+        onProcessComplete={handleDocumentProcessed}
+        onError={handleError}
+      />
             {/* Product Details Section */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Product Details</h3>

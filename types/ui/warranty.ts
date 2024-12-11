@@ -3,6 +3,7 @@
 export type WarrantyStatus = 'active' | 'expiring' | 'expired';
 export type ViewMode = 'grid' | 'list';
 export type TabType = 'all' | 'active' | 'expiring' | 'expired';
+export type MainTabType = 'warranties' | 'subscriptions';
 
 export interface Warranty {
   id: number;
@@ -52,4 +53,22 @@ export interface ViewToggleProps {
 export interface TabProps {
   activeTab: TabType;
   onTabChange: (tab: TabType) => void;
+}
+
+
+// types/warranty.ts
+export interface ExtractedWarrantyData {
+  serialNumber?: string;
+  modelNumber?: string;
+  price?: string;
+  date?: string;
+  brand?: string;
+  productName?: string;
+  retailerName?: string;
+  retailerContact?: string;
+}
+
+export interface OCRProgressStatus {
+  status: string;
+  progress: number;
 }
