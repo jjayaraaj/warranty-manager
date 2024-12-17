@@ -65,7 +65,7 @@ const data = {
     
     {
       title: "My Warranties",
-      url: "#",
+      url: "/dashboard/warranties",
       icon: Library,
       items:[]
     },

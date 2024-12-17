@@ -1,135 +1,59 @@
-import React, { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { SubscriptionFormValues } from '@/types/ui/subscription';
+import { subscriptionFormSchema } from '@/types/ui/subscriptionFormSchema';
+import { zodResolver } from '@hookform/resolvers/zod';
 
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { subscriptionFormSchema, type SubscriptionFormValues } from '@/types/ui/subscriptionFormSchema';
 import { PlusCircle } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
 
-interface AddSubscriptionDialogProps {
-  onSubmit: (data: SubscriptionFormValues) => void;
-  subscription?: SubscriptionFormValues;
-}
+import React from 'react'
+import { useForm } from 'react-hook-form';
 
-const AddSubscriptionDialog: React.FC<AddSubscriptionDialogProps> = ({
-  onSubmit,
-  subscription
-}) => {
-  const [open, setOpen] = React.useState(false);
-  const [mounted, setMounted] = useState(false);
+const AddSubscription = () => {
+    const [open, setOpen] = React.useState(false);
+    const form = useForm<SubscriptionFormValues>({
+        resolver: zodResolver(subscriptionFormSchema),
+        defaultValues:{
+            serviceName: "",
+            provider: "",
+            planName: "",
+            subscriptionCost: 0,
+            billingCycle: "monthly",
+            // startDate: new Date().toISOString().split('T')[0],
+            autoRenewal: true,
+            category: "other",
+            paymentMethod: "",
+            notes: "",
+           
+        }
+    })
 
-  const form = useForm<SubscriptionFormValues>({
-    resolver: zodResolver(subscriptionFormSchema),
-    defaultValues: subscription || {
-      serviceName: "",
-      provider: "",
-      planName: "",
-      subscriptionCost: 0,
-      billingCycle: "monthly",
-      startDate: new Date().toISOString().split('T')[0],
-      autoRenewal: true,
-      category: "other",
-      paymentMethod: "",
-      notes: "",
-      usageTracking: {
-        enabled: false,
-        currentUsage: 0,
-        usageHistory: []
-      },
-      notifications: {
-        paymentReminders: true,
-        usageAlerts: true,
-        priceChanges: true,
-        reminderDays: [7, 3, 1]
-      }
+    const handleSubmit =  (data: SubscriptionFormValues) => {
+        console.log(data)
     }
-  });
-  
-
-  const handleSubmit = async (data: SubscriptionFormValues) => {
-    try {
-      console.log('Form data before submission:', data);
-      const formattedData = {
-        ...data,
-        subscriptionCost: Number(data.subscriptionCost)
-      };
-
-      await onSubmit(formattedData);
-      setOpen(false);
-      form.reset();
-      
-      toast({
-        title: "Success",
-        description: "Subscription added successfully",
-      });
-    } catch (error) {
-      console.error('Submission error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to add subscription",
-        variant: "destructive"
-      });
-    }
-  };
-
- 
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-  
-  if (!mounted) {
-    return null; // or a loading state
-  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Add Subscription
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>
-            {subscription ? 'Edit Subscription' : 'Add New Subscription'}
-          </DialogTitle>
-          <DialogDescription>
-            Enter the details of your subscription below.
-          </DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <FormField
+    <DialogTrigger asChild>
+      <Button>
+        <PlusCircle className="h-5 w-5 mr-2" />
+        Add Subscription
+      </Button>
+    </DialogTrigger>
+    <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+      <DialogHeader>
+        <DialogTitle>Add New Warranty</DialogTitle>
+        <DialogDescription>
+          Enter the details of your warranty. All fields marked with * are required.
+        </DialogDescription>
+      </DialogHeader>
+      <Form  {...form} >
+        <form className="space-y-6" onSubmit={form.handleSubmit(handleSubmit)}>
+        <FormField
               control={form.control}
               name="serviceName"
               render={({ field }) => (
@@ -142,22 +66,21 @@ const AddSubscriptionDialog: React.FC<AddSubscriptionDialogProps> = ({
                 </FormItem>
               )}
             />
-
-            <FormField
+              <FormField
               control={form.control}
               name="provider"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Provider</FormLabel>
+                  <FormLabel>Service Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Service provider" {...field} />
+                    <Input placeholder="Netflix, Spotify, etc." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <div className="grid grid-cols-2 gap-4">
+<div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="subscriptionCost"
@@ -210,7 +133,7 @@ const AddSubscriptionDialog: React.FC<AddSubscriptionDialogProps> = ({
               />
             </div>
 
-            <FormField
+             <FormField
               control={form.control}
               name="category"
               render={({ field }) => (
@@ -238,9 +161,9 @@ const AddSubscriptionDialog: React.FC<AddSubscriptionDialogProps> = ({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> 
 
-            <FormField
+               <FormField
               control={form.control}
               name="startDate"
               render={({ field }) => (
@@ -254,7 +177,7 @@ const AddSubscriptionDialog: React.FC<AddSubscriptionDialogProps> = ({
               )}
             />
 
-            <FormField
+<FormField
               control={form.control}
               name="autoRenewal"
               render={({ field }) => (
@@ -273,44 +196,23 @@ const AddSubscriptionDialog: React.FC<AddSubscriptionDialogProps> = ({
                   </FormControl>
                 </FormItem>
               )}
-            /> 
-
-             <FormField
-              control={form.control}
-              name="usageTracking.enabled"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                  <div className="space-y-0.5">
-                    <FormLabel>Usage Tracking</FormLabel>
-                    <FormDescription>
-                      Track usage for this subscription
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
             />
 
-            <DialogFooter>
+               <DialogFooter>
             <Button 
                 type="submit" 
-                disabled={form.formState.isSubmitting || !form.formState.isDirty}
+                
               >
-                {form.formState.isSubmitting ? 'Submitting...' : 
-                  subscription ? 'Save Changes' : 'Add Subscription'}
+                Add Subscription
               </Button>
               
             </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
-  );
-};
 
-export default AddSubscriptionDialog;
+        </form>
+      </Form>
+      </DialogContent></Dialog>
+
+  )
+}
+
+export  {AddSubscription}

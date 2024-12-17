@@ -1,36 +1,24 @@
 import { z } from "zod";
 
 export const subscriptionFormSchema = z.object({
-  id: z.number().optional(),
-  serviceName: z.string().min(2, "Service name must be at least 2 characters"),
+  serviceName: z.string().min(1, "Service name is required"),
   provider: z.string().min(1, "Provider name is required"),
-  planName: z.string().min(1, "Plan name is required"),
-  subscriptionCost: z.number().min(0, "Cost must be a positive number"),
-  billingCycle: z.enum(["monthly", "quarterly", "yearly", "custom"]),
-  customBillingDays: z.number().optional(),
+   planName: z.string().optional().default(""),
+   subscriptionCost: z.number().min(0, "Cost must be a positive number"),
+   billingCycle: z.enum(["monthly", "quarterly", "yearly", "custom"]),
   startDate: z.string().min(1, "Start date is required"),
   autoRenewal: z.boolean().default(true),
-  category: z.enum([
-    "streaming",
-    "software",
-    "gaming",
-    "music",
-    "cloud",
-    "fitness",
-    "other"
-  ]),
-  paymentMethod: z.string().min(1, "Payment method is required"),
+   category: z.enum(["streaming", "software", "gaming", "music", "cloud", "fitness", "other"]),
+  paymentMethod: z.string().optional().default(""),
   notes: z.string().optional().default(""),
   usageTracking: z.object({
     enabled: z.boolean().default(false),
-    monthlyLimit: z.number().optional(),
     currentUsage: z.number().default(0),
-    usageUnit: z.string().optional(),
     usageHistory: z.array(z.object({
       date: z.string(),
       amount: z.number()
     })).default([])
-  }).default({
+  }).optional().default({
     enabled: false,
     currentUsage: 0,
     usageHistory: []
@@ -40,7 +28,7 @@ export const subscriptionFormSchema = z.object({
     usageAlerts: z.boolean().default(true),
     priceChanges: z.boolean().default(true),
     reminderDays: z.array(z.number()).default([7, 3, 1])
-  }).default({
+  }).optional().default({
     paymentReminders: true,
     usageAlerts: true,
     priceChanges: true,

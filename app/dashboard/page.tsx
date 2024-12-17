@@ -41,6 +41,7 @@ import { subscriptionFormSchema, SubscriptionFormValues } from "@/types/ui/subsc
 import AddSubscriptionDialog from "./_components/AddSubscriptionDialog";
 import { z } from "zod";
 import { Subscription } from "@/types/ui/subscription";
+import { AddSubscription } from "./_components/AddSubscription";
 
 
 
@@ -362,25 +363,7 @@ setSubscriptions(prev => [...prev, newSubscription]);
   };
   return (
     <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      {/* <header className="border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <h1 className="text-xl font-bold">Warranty Manager</h1>
-            <div className="flex items-center space-x-4">
-              
-              <div className="flex items-center space-x-4">
-  <WarrantyNotifications />
-  <div className="h-8 w-8 rounded-full bg-gray-200"></div>
-</div>
 
-              <Button variant="ghost" size="icon">
-                <div className="h-8 w-8 rounded-full bg-muted"/>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header> */}
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Action Bar */}
@@ -409,6 +392,7 @@ setSubscriptions(prev => [...prev, newSubscription]);
             <ViewToggle currentView={viewMode} onViewChange={setViewMode} />
             <AddWarrantyDialog onSubmit={handleAddWarranty} />
             <AddSubscriptionDialog onSubmit={handleAddSubscription} />
+            {/* <AddSubscription /> */}
           
           </div>
         </div>
